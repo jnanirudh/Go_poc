@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+option go_package = "github.com/jnanirudh/fund-platform/gen";
+
+// ── Domain Messages ────────────────────────────────────────────────────────────
+
+// Transaction represents a mutual fund purchase event.
+message Transaction {
+    string trx_id           = 1;
+    string user_id          = 2;
+    string user_name        = 3;
+    string user_pan_num     = 4;
+    repeated FundDetail fund_details = 5;
+    string date_of_purchase = 6;
+    int64  nav = 7;
+    int64  no_of_units      = 8;
+}
+
+// FundDetail holds the details of a single mutual fund within a transaction.
+message FundDetail {
+    string fund_name = 1;
+    string amc_name  = 2;
+    string type      = 3;
+}
+
+// ── CRUD Request / Response Messages ──────────────────────────────────────────
+
+message CreateTransactionRequest {
+    string user_id          = 1;
+    string user_name        = 2;
+    string user_pan_num     = 3;
+    repeated FundDetail fund_details = 4;
+    string date_of_purchase = 5;
+    int64  nav = 6;
+    int64  no_of_units      = 7;
+}
+
+message GetTransactionRequest {
+    string trx_id = 1;
+}
+
+message UpdateTransactionRequest {
+    string trx_id           = 1;
+    string user_name        = 2;
+    string user_pan_num     = 3;
+    repeated FundDetail fund_details = 4;
+    string date_of_purchase = 5;
+    int64  nav = 6;
+    int64  no_of_units      = 7;
+}
+
+message DeleteTransactionRequest {
+    string trx_id = 1;
+}
+
+message ListTransactionsRequest {}
+
+message TransactionResponse {
+    Transaction transaction = 1;
+}
+
+message ListTransactionsResponse {
+    repeated Transaction transactions = 1;
+}
+
+message DeleteTransactionResponse {
+    bool   success = 1;
+    string message = 2;
+}
+
+// ── Search Request / Response Messages ────────────────────────────────────────
+
+message SearchTransactionsRequest {
+    string query     = 1; // full-text search string (e.g. "SBI equity")
+    string user_id   = 2; // optional: filter by user
+    string fund_name = 3; // optional: filter by fund name (LIKE match)
+}
+
+message SearchTransactionsResponse {
+    repeated Transaction transactions = 1;
+    int32 total                       = 2;
+}
+
+// ── Service Definitions ───────────────────────────────────────────────────────
+
+// TransactionService is hosted by data-service (:9090)
+service TransactionService {
+    rpc CreateTransaction (CreateTransactionRequest) returns (TransactionResponse);
+    rpc GetTransaction    (GetTransactionRequest)    returns (TransactionResponse);
+    rpc UpdateTransaction (UpdateTransactionRequest) returns (TransactionResponse);
+    rpc DeleteTransaction (DeleteTransactionRequest) returns (DeleteTransactionResponse);
+    rpc ListTransactions  (ListTransactionsRequest)  returns (ListTransactionsResponse);
+}
+
+// TransactionSearchService is hosted by search-service (:9091)
+service TransactionSearchService {
+    rpc SearchTransactions (SearchTransactionsRequest) returns (SearchTransactionsResponse);
+}

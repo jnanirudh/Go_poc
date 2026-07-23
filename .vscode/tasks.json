@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Generate Proto",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "proto"
+            ]
+        },
+        {
+            "label": "Go Mod Tidy",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "mod",
+                "tidy"
+            ]
+        },
+        {
+            "label": "Prepare Project",
+            "dependsOn": [
+                "Generate Proto",
+                "Go Mod Tidy"
+            ],
+            "dependsOrder": "sequence"
+        }
+    ]
+}
